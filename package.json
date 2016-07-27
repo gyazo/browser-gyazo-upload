@@ -1,0 +1,27 @@
+{
+  "name": "browser-gyazo-upload",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "browserify index.js -o dist/index.js -t [babelify --presets [es2015 es2016]]",
+    "prepublish": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/gyazo/browser-gyazo-upload.git"
+  },
+  "author": "pastak <pasta0915@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gyazo/browser-gyazo-upload/issues"
+  },
+  "homepage": "https://github.com/gyazo/browser-gyazo-upload#readme",
+  "devDependencies": {
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-es2016": "^6.11.3",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0"
+  }
+}
