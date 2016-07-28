@@ -4,8 +4,9 @@
   "description": "",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "browserify index.js -o dist/index.js -t [babelify --presets [es2015 es2016]]",
+    "test": "standard */**.js && ava -v --require ./test/helpers/setup.js ",
+    "build": "browserify index.js -o dist/index.js -t [babelify]",
+    "build-example": "browserify example/example.js -o example/example.dist.js -t [babelify]",
     "prepublish": "npm run build"
   },
   "repository": {
@@ -17,11 +18,33 @@
   "bugs": {
     "url": "https://github.com/gyazo/browser-gyazo-upload/issues"
   },
+  "standard": {
+    "globals": ["fetch"],
+    "ignore": ["example/example.dist.js"]
+  },
+  "babel": {
+    "presets": [
+      "es2015",
+      "es2016"
+    ]
+  },
+  "ava": {
+    "babel": "inherit"
+  },
   "homepage": "https://github.com/gyazo/browser-gyazo-upload#readme",
   "devDependencies": {
+    "ava": "^0.15.2",
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-es2016": "^6.11.3",
+    "babel-register": "^6.11.6",
     "babelify": "^7.3.0",
-    "browserify": "^13.1.0"
+    "browserify": "^13.1.0",
+    "canvas": "^1.4.0",
+    "fetch-mock": "^5.0.3",
+    "jsdom": "^9.4.1",
+    "standard": "^7.1.2"
+  },
+  "dependencies": {
+    "whatwg-fetch": "^1.0.0"
   }
 }
