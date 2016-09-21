@@ -86,6 +86,5 @@ export default class uploadClient {
           markdown: this.generateFormatFromImageId({imageId: json.imageId, format: 'markdown'})
         }
       })
-      .then((a) => console.log(a))
   }
 }

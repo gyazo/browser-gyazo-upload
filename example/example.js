@@ -23,5 +23,5 @@ window.navigator.getUserMedia({video: true, audio: false}, (stream) => {
 
 document.querySelector('button').addEventListener('click', () => {
   const client = new GyazoUpload('76e7eee216a88e19f68d034d9ab4afe4e9bd92ff38e2347c01fe05c482f55297')
-  client.upload(canvas)
+  client.upload(canvas).then((a) => console.log(a))
 })
