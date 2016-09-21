@@ -121,7 +121,7 @@ var uploadClient = function () {
   }, {
     key: 'formData',
     value: function formData() {
-      var formData = new FormData();
+      var formData = new window.FormData();
       for (var key in this.sendBody) {
         if (this.sendBody.hasOwnProperty(key)) {
           formData.append(key, this.sendBody[key]);
@@ -147,20 +147,66 @@ var uploadClient = function () {
       }).then(function (res) {
         return res.json();
       }).then(function (json) {
-        return json.get_image_url;
+        return new Promise(function (ok) {
+          var uploadAcceptUrl = json.get_image_url;
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', uploadAcceptUrl);
+          xhr.onreadystatechange = function () {
+            console.log(xhr.getResponseHeader('location'));
+            console.log(xhr.responseURL);
+            if (xhr.readyState !== 4) return;
+            var gyazoUrl = xhr.responseURL;
+            ok({
+              url: gyazoUrl,
+              imageId: gyazoUrl.match(/[a-f0-9]{32}/)[0]
+            });
+          };
+          xhr.send();
+        });
       });
     }
   }, {
-    key: 'openBrowser',
-    value: function openBrowser(uri) {
-      var childWindow = window.open(uri);
+    key: 'generateFormatFromImageId',
+    value: function generateFormatFromImageId(_ref) {
+      var imageId = _ref.imageId;
+      var format = _ref.format;
+
+      if (!imageId) throw new Error('You should set imageId');
+      var gyazoUrl = 'https://gyazo.com/' + imageId;
+      switch (format) {
+        case 'md':
+        case 'markdown':
+          return '[![Gyazo](' + gyazoUrl + '/raw)](' + gyazoUrl + ')';
+        case 'html':
+        case 'HTML':
+          return '<a href=\'' + gyazoUrl + '\'><img src=\'' + gyazoUrl + '/raw\' /></a>';
+        case 'imageUrl':
+        case 'imageURL':
+          return gyazoUrl + '/raw';
+        case 'url':
+        case 'Url':
+        case 'URL':
+        default:
+          return gyazoUrl;
+      }
     }
   }, {
     key: 'upload',
     value: function upload(imagedata, body) {
+      var _this2 = this;
+
       if (imagedata) this.imagedata = imagedata;
       this.setBody(body);
-      this.easyAuth().then(this.openBrowser.bind(this));
+      this.easyAuth().then(function (json) {
+        return {
+          url: _this2.generateFormatFromImageId({ imageId: json.imageId, format: 'url' }),
+          imageUrl: _this2.generateFormatFromImageId({ imageId: json.imageId, format: 'imageUrl' }),
+          html: _this2.generateFormatFromImageId({ imageId: json.imageId, format: 'html' }),
+          markdown: _this2.generateFormatFromImageId({ imageId: json.imageId, format: 'markdown' })
+        };
+      }).then(function (a) {
+        return console.log(a);
+      });
     }
   }]);
 

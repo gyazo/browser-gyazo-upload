@@ -39,14 +39,53 @@ export default class uploadClient {
         })
       })
       .then((res) => res.json())
-      .then((json) => json.get_image_url)
+      .then((json) => new Promise((ok) => {
+        const uploadAcceptUrl = json.get_image_url
+        const xhr = new XMLHttpRequest()
+        xhr.open('GET', uploadAcceptUrl)
+        xhr.onreadystatechange = () => {
+          const gyazoUrl = xhr.responseURL
+          if (!(xhr.readyState === 4 && gyazoUrl)) return
+          ok({
+            url: gyazoUrl,
+            imageId: gyazoUrl.match(/[a-f0-9]{32}/)[0]
+          })
+        }
+        xhr.send()
+      }))
   }
-  openBrowser (uri) {
-    window.open(uri)
+  generateFormatFromImageId ({imageId, format}) {
+    if (!imageId) throw new Error('You should set imageId')
+    const gyazoUrl = 'https://gyazo.com/' + imageId
+    switch (format) {
+      case 'md':
+      case 'markdown':
+        return `[![Gyazo](${gyazoUrl}/raw)](${gyazoUrl})`
+      case 'html':
+      case 'HTML':
+        return `<a href='${gyazoUrl}'><img src='${gyazoUrl}/raw' /></a>`
+      case 'imageUrl':
+      case 'imageURL':
+        return gyazoUrl + '/raw'
+      case 'url':
+      case 'Url':
+      case 'URL':
+      default:
+        return gyazoUrl
+    }
   }
   upload (imagedata, body) {
     if (imagedata) this.imagedata = imagedata
     this.setBody(body)
-    this.easyAuth().then(this.openBrowser.bind(this))
+    this.easyAuth()
+      .then((json) => {
+        return {
+          url: this.generateFormatFromImageId({imageId: json.imageId, format: 'url'}),
+          imageUrl: this.generateFormatFromImageId({imageId: json.imageId, format: 'imageUrl'}),
+          html: this.generateFormatFromImageId({imageId: json.imageId, format: 'html'}),
+          markdown: this.generateFormatFromImageId({imageId: json.imageId, format: 'markdown'})
+        }
+      })
+      .then((a) => console.log(a))
   }
 }
