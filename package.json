@@ -1,11 +1,11 @@
 {
   "name": "browser-gyazo-upload",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "",
   "main": "dist/index.js",
   "scripts": {
     "test": "standard */**.js && ava -v --require ./test/helpers/setup.js ",
-    "build": "browserify index.js -o dist/index.js -t [babelify]",
+    "build": "browserify src/index.js -o dist/index.js -t [babelify]",
     "build-example": "browserify example/example.js -o example/example.dist.js -t [babelify]",
     "prepublish": "npm run build"
   },
